@@ -34,8 +34,8 @@ def get_questions():
 @app.route('/submit', methods=['POST'])
 def submit_answers():
     answers = request.json.get('answers')
-    introvert_score = answers.count(1) + answers.count(2)
-    extrovert_score = answers.count(3) + answers.count(4)
+    introvert_score = answers.count(0) + answers.count(1)
+    extrovert_score = answers.count(2) + answers.count(3)
     result = "Introvert" if introvert_score >= extrovert_score else "Extrovert"
     return jsonify({"result": result})
 

@@ -46,7 +46,7 @@ const QuestionPage = () => {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="md">
       {loading ? (
         <Box
           display="flex"
@@ -58,7 +58,7 @@ const QuestionPage = () => {
         </Box>
       ) : (
         questions.map((question) => (
-          <Box key={question.id} mt={4}>
+          <Box key={question.id} mt={5}>
             <FormControl component="fieldset">
               <FormLabel component="legend">{question.question}</FormLabel>
               <RadioGroup
@@ -81,7 +81,7 @@ const QuestionPage = () => {
         ))
       )}
       {!loading && (
-        <Box textAlign="center" mt={5}>
+        <Box textAlign="center" my={5}>
           <Button variant="contained" color="primary" onClick={handleSubmit}>
             Submit
           </Button>

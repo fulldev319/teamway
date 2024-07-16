@@ -13,7 +13,9 @@ const ResultPage = () => {
         <Typography variant="h4" gutterBottom>
           Your Result
         </Typography>
-        <Typography variant="h5">You are more of an {result}</Typography>
+        <Typography variant="h5" color="red">
+          You are more of an {result}
+        </Typography>
       </Box>
     </Container>
   );
