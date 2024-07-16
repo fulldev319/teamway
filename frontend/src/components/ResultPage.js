@@ -1,5 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
+import { Container, Typography, Box } from "@mui/material";
 
 const ResultPage = () => {
   const location = useLocation();
@@ -7,10 +8,14 @@ const ResultPage = () => {
   const result = params.get("type");
 
   return (
-    <div>
-      <h1>Your Result</h1>
-      <p>You are more of an {result}</p>
-    </div>
+    <Container maxWidth="sm">
+      <Box textAlign="center" mt={5}>
+        <Typography variant="h4" gutterBottom>
+          Your Result
+        </Typography>
+        <Typography variant="h5">You are more of an {result}</Typography>
+      </Box>
+    </Container>
   );
 };
 

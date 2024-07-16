@@ -1,16 +1,36 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import {
+  Container,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
+  Button,
+  Box,
+  CircularProgress,
+} from "@mui/material";
 
 const QuestionPage = () => {
+  const navigate = useNavigate();
+
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios
       .get("http://localhost:5000/questions")
-      .then((response) => setQuestions(response.data));
+      .then((response) => {
+        setQuestions(response.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("There was an error fetching the questions!", error);
+        setLoading(false);
+      });
   }, []);
 
   const handleAnswerChange = (questionId, optionIndex) => {
@@ -26,25 +46,48 @@ const QuestionPage = () => {
   };
 
   return (
-    <div>
-      {questions.map((question) => (
-        <div key={question.id}>
-          <p>{question.question}</p>
-          {question.options.map((option, index) => (
-            <div key={index}>
-              <input
-                type="radio"
+    <Container maxWidth="sm">
+      {loading ? (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100vh"
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+        questions.map((question) => (
+          <Box key={question.id} mt={4}>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">{question.question}</FormLabel>
+              <RadioGroup
                 name={`question-${question.id}`}
-                value={index}
-                onChange={() => handleAnswerChange(question.id, index)}
-              />
-              {option}
-            </div>
-          ))}
-        </div>
-      ))}
-      <button onClick={handleSubmit}>Submit</button>
-    </div>
+                onChange={(e) =>
+                  handleAnswerChange(question.id, parseInt(e.target.value))
+                }
+              >
+                {question.options.map((option, index) => (
+                  <FormControlLabel
+                    key={index}
+                    value={index}
+                    control={<Radio />}
+                    label={option}
+                  />
+                ))}
+              </RadioGroup>
+            </FormControl>
+          </Box>
+        ))
+      )}
+      {!loading && (
+        <Box textAlign="center" mt={5}>
+          <Button variant="contained" color="primary" onClick={handleSubmit}>
+            Submit
+          </Button>
+        </Box>
+      )}
+    </Container>
   );
 };
 
