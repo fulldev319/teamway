@@ -11,7 +11,10 @@ import {
   Button,
   Box,
   CircularProgress,
+  Snackbar,
+  IconButton,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 const QuestionPage = () => {
   const navigate = useNavigate();
@@ -19,6 +22,7 @@ const QuestionPage = () => {
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   useEffect(() => {
     axios
@@ -40,9 +44,23 @@ const QuestionPage = () => {
   };
 
   const handleSubmit = () => {
-    axios.post("http://localhost:5000/submit", { answers }).then((response) => {
-      navigate(`/result?type=${response.data.result}`);
-    });
+    if (answers.length < questions.length || answers.includes(undefined)) {
+      setOpenSnackbar(true);
+    } else {
+      axios
+        .post("http://localhost:5000/submit", { answers })
+        .then((response) => {
+          navigate(`/result?type=${response.data.result}`);
+        });
+    }
+  };
+
+  const handleBack = () => {
+    navigate("/");
+  };
+
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
   };
 
   return (
@@ -82,11 +100,38 @@ const QuestionPage = () => {
       )}
       {!loading && (
         <Box textAlign="center" my={5}>
+          <Button
+            variant="outlined"
+            color="info"
+            onClick={handleBack}
+            style={{ marginRight: "10px" }}
+          >
+            Back
+          </Button>
           <Button variant="contained" color="primary" onClick={handleSubmit}>
             Submit
           </Button>
         </Box>
       )}
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        message="Please select an option for each question."
+        action={
+          <React.Fragment>
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={handleSnackbarClose}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
     </Container>
   );
 };
