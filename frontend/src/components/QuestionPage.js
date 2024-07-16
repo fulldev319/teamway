@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 const QuestionPage = () => {
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
-  const history = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -21,7 +21,7 @@ const QuestionPage = () => {
 
   const handleSubmit = () => {
     axios.post("http://localhost:5000/submit", { answers }).then((response) => {
-      history.push(`/result?type=${response.data.result}`);
+      navigate(`/result?type=${response.data.result}`);
     });
   };
 
