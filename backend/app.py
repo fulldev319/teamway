@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
@@ -26,6 +27,36 @@ questions = [
         "options": ["Are a bit too far towards the back so don’t really hear what the guide is saying", "Follow the group without question", "Make sure that everyone is able to hear properly", "Are right up the front, adding your own comments in a loud voice"]
     }
 ]
+
+# Configure the PostgreSQL database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://orion:@localhost:5432/personality_db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+# Define your models here
+class Question(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    question = db.Column(db.String(200), nullable=False)
+    options = db.Column(db.JSON, nullable=False)
+
+class Answer(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
+    answer = db.Column(db.String(200), nullable=False)
+
+# Create the database tables
+@app.before_request
+def create_tables():
+    print('--pre action--')
+    db.create_all()
+
+@app.route('questions', methods=['POST'])
+def add_question():
+    data = request.get_json()
+    new_question = Question(question=data['question'], options=data['options'])
+    db.session.add(new_question)
+    db.session.commit()
+    return jsonify({'message': 'Question added successfully!'}), 201
 
 @app.route('/questions', methods=['GET'])
 def get_questions():
