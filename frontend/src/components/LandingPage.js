@@ -10,11 +10,19 @@ const LandingPage = () => (
       </Typography>
       <Button
         variant="contained"
-        color="primary"
         component={Link}
         to="/questions"
+        sx={{ mt: 2 }}
       >
         Start Personality Test
+      </Button>
+      <Button
+        component={Link}
+        to="/add-question"
+        variant="contained"
+        sx={{ mt: 2, ml: 2 }}
+      >
+        Add New Question
       </Button>
     </Box>
   </Container>

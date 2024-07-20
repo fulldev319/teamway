@@ -4,6 +4,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import LandingPage from "./components/LandingPage";
 import QuestionPage from "./components/QuestionPage";
 import ResultPage from "./components/ResultPage";
+import AddQuestionForm from "./components/AddQuestionForm";
 
 const theme = createTheme({
   palette: {
@@ -20,6 +21,7 @@ const App = () => (
         <Route path="/" exact element={<LandingPage />} />
         <Route path="/questions" element={<QuestionPage />} />
         <Route path="/result" element={<ResultPage />} />
+        <Route path="/add-question" element={<AddQuestionForm />} />
       </Routes>
     </Router>
   </ThemeProvider>
