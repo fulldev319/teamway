@@ -39,7 +39,7 @@ const QuestionPage = () => {
 
   const handleAnswerChange = (questionId, optionIndex) => {
     const newAnswers = [...answers];
-    newAnswers[questionId - 1] = optionIndex;
+    newAnswers[questionId] = optionIndex;
     setAnswers(newAnswers);
   };
 
@@ -75,14 +75,14 @@ const QuestionPage = () => {
           <CircularProgress />
         </Box>
       ) : (
-        questions.map((question) => (
+        questions.map((question, idx) => (
           <Box key={question.id} mt={5}>
             <FormControl component="fieldset">
               <FormLabel component="legend">{question.question}</FormLabel>
               <RadioGroup
                 name={`question-${question.id}`}
                 onChange={(e) =>
-                  handleAnswerChange(question.id, parseInt(e.target.value))
+                  handleAnswerChange(idx, parseInt(e.target.value))
                 }
               >
                 {question.options.map((option, index) => (
