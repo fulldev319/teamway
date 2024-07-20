@@ -24,7 +24,6 @@ class Answer(db.Model):
 # Create the database tables
 @app.before_request
 def create_tables():
-    print('--- pre-action ---')
     db.create_all()
 
 @app.route('/questions', methods=['POST'])
