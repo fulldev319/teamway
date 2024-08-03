@@ -1,14 +1,24 @@
+import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+from dotenv import load_dotenv
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, JWTManager
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 # Configure the PostgreSQL database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://orion:@localhost:5432/personality_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+bcrypt = Bcrypt()
+jwt = JWTManager(app)
+
 
 # Define your models here
 class Question(db.Model):
@@ -21,10 +31,51 @@ class Answer(db.Model):
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
     answer = db.Column(db.String(200), nullable=False)
 
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(150), nullable=False)
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+
 # Create the database tables
 @app.before_request
 def create_tables():
     db.create_all()
+
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+    if User.query.filter_by(username=username).first():
+        return jsonify({"msg": "Username already exists"}), 409
+
+    new_user = User(username=username, password=password)
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({"msg": "User registered successfully"}), 201
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+    user = User.query.filter_by(username=username).first()
+    if not user or not bcrypt.check_password_hash(user.password, password):
+        return jsonify({"msg": "Invalid credentials"}), 401
+
+    access_token = create_access_token(identity=user.id)
+    return jsonify(access_token=access_token), 200
+
+@app.route('/protected', methods=['GET'])
+@jwt_required()
+def protected():
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    return jsonify(logged_in_as=user.username), 200
 
 @app.route('/questions', methods=['POST'])
 def add_question():

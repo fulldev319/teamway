@@ -5,6 +5,8 @@ import LandingPage from "./components/LandingPage";
 import QuestionPage from "./components/QuestionPage";
 import ResultPage from "./components/ResultPage";
 import AddQuestionForm from "./components/AddQuestionForm";
+import Login from "./components/Login";
+import Register from "./components/Register";
 
 const theme = createTheme({
   palette: {
@@ -22,6 +24,8 @@ const App = () => (
         <Route path="/questions" element={<QuestionPage />} />
         <Route path="/result" element={<ResultPage />} />
         <Route path="/add-question" element={<AddQuestionForm />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </Router>
   </ThemeProvider>
