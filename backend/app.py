@@ -31,6 +31,7 @@ def add_question():
     data = request.get_json()
     new_question = Question(question=data['question'], options=data['options'])
     db.session.add(new_question)
+    # error handle
     db.session.commit()
     return jsonify({'message': 'Question added successfully!'}), 201
 
